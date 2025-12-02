@@ -183,6 +183,7 @@ LOG_TRACE("Entering function %s", __func__);
 ```
 
 Capture output with QEMU:
+
 ```bash
 qemu-system-i386 -cdrom bin/myOS.iso -serial stdio
 ```
@@ -404,6 +405,7 @@ Then integrate the output into `Font.cpp`.
 This project is licensed under the BSD-3-Clause License. See the [LICENSE](LICENSE) file for details.
 
 **Important**: If you use this template, please retain the copyright notice in your source files:
+
 ```cpp
 /**
  * Based on myOS Template by Mustafa Alotbah
