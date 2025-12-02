@@ -1,0 +1,32 @@
+# Build output
+bin/
+build/
+cmake-build-*/
+
+# Object files
+*.o
+*.obj
+*.elf
+
+# IDE
+.vscode/
+.idea/
+*.cbp
+
+# CMake generated (in source tree)
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+compile_commands.json
+
+# Logs
+*.log
+
+# Backups
+*.backup
+*.bak
+
+# OS specific
+.DS_Store
+Thumbs.db
