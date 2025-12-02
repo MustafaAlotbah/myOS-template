@@ -1,51 +1,52 @@
 /**
  * @file stdio.cpp
  * @brief Standard I/O functions implementation
- * 
+ *
  * @author Mustafa Alotbah
  * @copyright myOS Project
  */
 
 #include "../include/stdio.h"
-#include "../include/string.h"
-#include "../include/stdlib.h"
-#include "../include/memory.h"
 #include "../include/ctype.h"
+#include "../include/memory.h"
+#include "../include/stdlib.h"
+#include "../include/string.h"
+
 
 extern "C" {
 
 size_t vsprintf(char* str, const char* format, va_list args) {
     char* out = str;
     char num_str[40];
-    
+
     for (const char* traverse = format; *traverse; traverse++) {
         if (*traverse != '%') {
             *out++ = *traverse;
             continue;
         }
-        
+
         traverse++;  // Move past '%'
-        
+
         if (*traverse == '%') {
             *out++ = '%';
             continue;
         }
-        
+
         // Parse width and precision
-        int width = 0;
+        int width     = 0;
         int precision = -1;
-        
+
         if (*traverse >= '0' && *traverse <= '9') {
             width = atoi(traverse);
             while (*traverse >= '0' && *traverse <= '9') traverse++;
         }
-        
+
         if (*traverse == '.') {
             traverse++;
             precision = atoi(traverse);
             while (*traverse >= '0' && *traverse <= '9') traverse++;
         }
-        
+
         switch (*traverse) {
             case 's': {  // String
                 char* s = va_arg(args, char*);
@@ -56,8 +57,8 @@ size_t vsprintf(char* str, const char* format, va_list args) {
                 break;
             }
             case 'c': {  // Character
-                int c = va_arg(args, int);
-                *out++ = (char)c;
+                int c  = va_arg(args, int);
+                *out++ = (char) c;
                 break;
             }
             case 'p': {  // Pointer
@@ -73,14 +74,14 @@ size_t vsprintf(char* str, const char* format, va_list args) {
             case 'i': {  // Signed integer
                 int32_t d = va_arg(args, int32_t);
                 itoa(d, num_str, 10, false);
-                
+
                 // Handle width formatting with zero padding
                 size_t len = strlen(num_str);
-                if (width > 0 && (size_t)width > len) {
+                if (width > 0 && (size_t) width > len) {
                     memset(out, '0', width - len);
                     out += width - len;
                 }
-                
+
                 strcpy(out, num_str);
                 out += strlen(num_str);
                 break;
@@ -88,13 +89,13 @@ size_t vsprintf(char* str, const char* format, va_list args) {
             case 'u': {  // Unsigned integer
                 uint32_t u = va_arg(args, uint32_t);
                 uitoa(u, num_str, 10, false);
-                
+
                 size_t len = strlen(num_str);
-                if (width > 0 && (size_t)width > len) {
+                if (width > 0 && (size_t) width > len) {
                     memset(out, '0', width - len);
                     out += width - len;
                 }
-                
+
                 strcpy(out, num_str);
                 out += strlen(num_str);
                 break;
@@ -127,7 +128,8 @@ size_t vsprintf(char* str, const char* format, va_list args) {
                     uitoa64(z, num_str, 10, false);
                     strcpy(out, num_str);
                     out += strlen(num_str);
-                } else {
+                }
+                else {
                     *out++ = '%';
                     *out++ = 'z';
                 }
@@ -140,13 +142,15 @@ size_t vsprintf(char* str, const char* format, va_list args) {
                     itoa64(ld, num_str, 10, false);
                     strcpy(out, num_str);
                     out += strlen(num_str);
-                } else if (*(traverse + 1) == 'u') {
+                }
+                else if (*(traverse + 1) == 'u') {
                     traverse++;
                     uint64_t lu = va_arg(args, unsigned long);
                     uitoa64(lu, num_str, 10, false);
                     strcpy(out, num_str);
                     out += strlen(num_str);
-                } else if (*(traverse + 1) == 'l') {
+                }
+                else if (*(traverse + 1) == 'l') {
                     traverse++;
                     if (*(traverse + 1) == 'd') {
                         traverse++;
@@ -154,30 +158,35 @@ size_t vsprintf(char* str, const char* format, va_list args) {
                         itoa64(lld, num_str, 10, false);
                         strcpy(out, num_str);
                         out += strlen(num_str);
-                    } else if (*(traverse + 1) == 'u') {
+                    }
+                    else if (*(traverse + 1) == 'u') {
                         traverse++;
                         uint64_t llu = va_arg(args, unsigned long long);
                         uitoa64(llu, num_str, 10, false);
                         strcpy(out, num_str);
                         out += strlen(num_str);
-                    } else if (*(traverse + 1) == 'x') {
+                    }
+                    else if (*(traverse + 1) == 'x') {
                         traverse++;
                         uint64_t llx = va_arg(args, unsigned long long);
                         uitoa64(llx, num_str, 16, false);
                         strcpy(out, num_str);
                         out += strlen(num_str);
-                    } else if (*(traverse + 1) == 'X') {
+                    }
+                    else if (*(traverse + 1) == 'X') {
                         traverse++;
                         uint64_t llX = va_arg(args, unsigned long long);
                         uitoa64(llX, num_str, 16, true);
                         strcpy(out, num_str);
                         out += strlen(num_str);
-                    } else {
+                    }
+                    else {
                         *out++ = '%';
                         *out++ = 'l';
                         *out++ = 'l';
                     }
-                } else {
+                }
+                else {
                     *out++ = '%';
                     *out++ = 'l';
                 }
@@ -197,7 +206,7 @@ size_t vsprintf(char* str, const char* format, va_list args) {
                 break;
         }
     }
-    
+
     *out = '\0';
     return out - str;
 }
@@ -212,16 +221,14 @@ size_t sprintf(char* str, const char* format, ...) {
 
 size_t vsnprintf(char* str, size_t size, const char* format, va_list ap) {
     char buffer[1024] = {0};
-    
-    size_t written = vsprintf(buffer, format, ap);
-    
-    if (written >= size) {
-        written = size - 1;
-    }
-    
+
+    size_t written    = vsprintf(buffer, format, ap);
+
+    if (written >= size) { written = size - 1; }
+
     memcpy(str, buffer, written);
     str[written] = '\0';
-    
+
     return written;
 }
 
@@ -238,33 +245,30 @@ size_t snprintf(char* str, size_t size, const char* format, ...) {
 // ============================================================================
 
 static const char* skip_whitespace(const char* str) {
-    while (*str && (*str == ' ' || *str == '\t' || *str == '\n' || *str == '\r')) {
-        str++;
-    }
+    while (*str && (*str == ' ' || *str == '\t' || *str == '\n' || *str == '\r')) { str++; }
     return str;
 }
 
 static bool parse_int(const char** str_ptr, int* result) {
     const char* str = skip_whitespace(*str_ptr);
     if (!*str) return false;
-    
+
     bool negative = false;
     if (*str == '-') {
         negative = true;
         str++;
-    } else if (*str == '+') {
-        str++;
     }
-    
+    else if (*str == '+') { str++; }
+
     if (!(*str >= '0' && *str <= '9')) return false;
-    
+
     int value = 0;
     while (*str >= '0' && *str <= '9') {
         value = value * 10 + (*str - '0');
         str++;
     }
-    
-    *result = negative ? -value : value;
+
+    *result  = negative ? -value : value;
     *str_ptr = str;
     return true;
 }
@@ -272,48 +276,44 @@ static bool parse_int(const char** str_ptr, int* result) {
 static bool parse_uint(const char** str_ptr, unsigned int* result) {
     const char* str = skip_whitespace(*str_ptr);
     if (!*str || !(*str >= '0' && *str <= '9')) return false;
-    
+
     unsigned int value = 0;
     while (*str >= '0' && *str <= '9') {
         value = value * 10 + (*str - '0');
         str++;
     }
-    
-    *result = value;
+
+    *result  = value;
     *str_ptr = str;
     return true;
 }
 
 static bool parse_hex(const char** str_ptr, unsigned int* result) {
     const char* str = skip_whitespace(*str_ptr);
-    
+
     // Handle optional "0x" prefix
-    if (*str == '0' && (*(str + 1) == 'x' || *(str + 1) == 'X')) {
-        str += 2;
-    }
-    
+    if (*str == '0' && (*(str + 1) == 'x' || *(str + 1) == 'X')) { str += 2; }
+
     if (!*str) return false;
-    
-    auto is_hex_digit = [](char c) {
-        return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
-    };
-    
-    auto hex_to_int = [](char c) {
+
+    auto is_hex_digit = [](char c) { return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'); };
+
+    auto hex_to_int   = [](char c) {
         if (c >= '0' && c <= '9') return c - '0';
         if (c >= 'a' && c <= 'f') return c - 'a' + 10;
         if (c >= 'A' && c <= 'F') return c - 'A' + 10;
         return 0;
     };
-    
+
     if (!is_hex_digit(*str)) return false;
-    
+
     unsigned int value = 0;
     while (*str && is_hex_digit(*str)) {
         value = value * 16 + hex_to_int(*str);
         str++;
     }
-    
-    *result = value;
+
+    *result  = value;
     *str_ptr = str;
     return true;
 }
@@ -321,50 +321,48 @@ static bool parse_hex(const char** str_ptr, unsigned int* result) {
 static bool parse_float(const char** str_ptr, double* result) {
     const char* str = skip_whitespace(*str_ptr);
     if (!*str) return false;
-    
+
     bool negative = false;
     if (*str == '-') {
         negative = true;
         str++;
-    } else if (*str == '+') {
-        str++;
     }
-    
+    else if (*str == '+') { str++; }
+
     if (!(*str >= '0' && *str <= '9') && *str != '.') return false;
-    
-    double value = 0.0;
+
+    double value         = 0.0;
     double decimal_place = 1.0;
-    bool seen_decimal = false;
-    
+    bool seen_decimal    = false;
+
     while (*str) {
         if (*str == '.') {
             if (seen_decimal) break;
             seen_decimal = true;
             str++;
-        } else if (*str >= '0' && *str <= '9') {
+        }
+        else if (*str >= '0' && *str <= '9') {
             if (seen_decimal) {
                 decimal_place *= 0.1;
-                value += (double)(*str - '0') * decimal_place;
-            } else {
-                value = value * 10.0 + (double)(*str - '0');
+                value += (double) (*str - '0') * decimal_place;
             }
+            else { value = value * 10.0 + (double) (*str - '0'); }
             str++;
-        } else {
-            break;
         }
+        else { break; }
     }
-    
-    *result = negative ? -value : value;
+
+    *result  = negative ? -value : value;
     *str_ptr = str;
     return true;
 }
 
 size_t vsscanf(const char* str, const char* format, va_list args) {
     if (!str || !format) return 0;
-    
+
     size_t items_assigned = 0;
-    const char* input = str;
-    
+    const char* input     = str;
+
     for (const char* fmt = format; *fmt; fmt++) {
         if (*fmt != '%') {
             // Handle whitespace in format
@@ -372,21 +370,21 @@ size_t vsscanf(const char* str, const char* format, va_list args) {
                 input = skip_whitespace(input);
                 continue;
             }
-            
+
             // Literal character must match
             if (!*input || *input != *fmt) return items_assigned;
             input++;
             continue;
         }
-        
+
         fmt++;  // Move past '%'
-        
+
         if (*fmt == '%') {
             if (*input != '%') return items_assigned;
             input++;
             continue;
         }
-        
+
         // Parse width specifier
         int width = -1;
         if (*fmt >= '0' && *fmt <= '9') {
@@ -396,9 +394,9 @@ size_t vsscanf(const char* str, const char* format, va_list args) {
                 fmt++;
             }
         }
-        
+
         input = skip_whitespace(input);
-        
+
         switch (*fmt) {
             case 'd': {
                 int* ptr = va_arg(args, int*);
@@ -428,14 +426,14 @@ size_t vsscanf(const char* str, const char* format, va_list args) {
             case 's': {
                 char* ptr = va_arg(args, char*);
                 if (!ptr || width <= 0) return items_assigned;
-                
+
                 int chars_read = 0;
                 while (*input && chars_read < width - 1 && !isspace(*input)) {
                     *ptr++ = *input++;
                     chars_read++;
                 }
                 *ptr = '\0';
-                
+
                 if (chars_read == 0) return items_assigned;
                 items_assigned++;
                 break;
@@ -452,15 +450,14 @@ size_t vsscanf(const char* str, const char* format, va_list args) {
                 if (!ptr) return items_assigned;
                 unsigned int addr = 0;
                 if (!parse_hex(&input, &addr)) return items_assigned;
-                *ptr = (void*)(uintptr_t)addr;
+                *ptr = (void*) (uintptr_t) addr;
                 items_assigned++;
                 break;
             }
-            default:
-                return items_assigned;
+            default: return items_assigned;
         }
     }
-    
+
     return items_assigned;
 }
 
@@ -472,5 +469,4 @@ size_t sscanf(const char* str, const char* format, ...) {
     return result;
 }
 
-} // extern "C"
-
+}  // extern "C"

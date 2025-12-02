@@ -1,7 +1,7 @@
 /**
  * @file string.h
  * @brief String manipulation functions for freestanding environment
- * 
+ *
  * @author Mustafa Alotbah
  * @copyright myOS Project
  */
@@ -115,4 +115,3 @@ char* strsep(char** stringp, const char* delim);
 #ifdef __cplusplus
 }
 #endif
-

@@ -11,8 +11,9 @@
 
 #include <myOS/kernel/Kernel.h>
 #include <myOS/kernel/Logger.h>
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
+
 
 // Linker symbols for C++ constructors
 extern "C" void (*first_constructor)();
@@ -23,6 +24,7 @@ extern "C" void (*last_constructor)();
  */
 static void callConstructors() {
     for (void (**ctor)() = &first_constructor; ctor != &last_constructor; ++ctor) {
+        // Call each constructor
         (*ctor)();
     }
 }

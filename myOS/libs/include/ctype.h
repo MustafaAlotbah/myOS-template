@@ -1,7 +1,7 @@
 /**
  * @file ctype.h
  * @brief Character classification and conversion functions
- * 
+ *
  * @author Mustafa Alotbah
  * @copyright myOS Project
  */
@@ -85,4 +85,3 @@ int toupper(int c);
 #ifdef __cplusplus
 }
 #endif
-

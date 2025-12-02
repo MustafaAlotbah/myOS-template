@@ -1,10 +1,10 @@
 /**
  * @file math.h
  * @brief Math functions for freestanding environment
- * 
+ *
  * Provides basic math operations including precomputed trigonometry tables
  * for fast sin/cos lookups without FPU-heavy calculations.
- * 
+ *
  * @author Mustafa Alotbah
  * @copyright myOS Project
  */
@@ -105,6 +105,5 @@ double sqrt(double x);
 namespace myOS::math {
     inline double sin(int degree) { return sin_deg(degree); }
     inline double cos(int degree) { return cos_deg(degree); }
-}
+}  // namespace myOS::math
 #endif
-

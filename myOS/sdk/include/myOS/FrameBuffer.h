@@ -14,95 +14,95 @@
 
 #pragma once
 
-#include <myOS/types.h>
 #include <myOS/Color.h>
+#include <myOS/types.h>
+
 
 namespace myOS {
 
-/**
- * @brief Double-buffered framebuffer for graphics rendering
- *
- * Manages front and back buffers for tear-free rendering.
- * Draw operations go to the back buffer, then swapBuffers()
- * copies to the front (visible) buffer.
- *
- * @example
- *   // Kernel provides the buffer pointers
- *   FrameBuffer fb(800, 600, frontPtr, backPtr);
- *   fb.fill(Color::Black);
- *   fb.drawPixel(100, 100, Color::White);
- *   fb.swapBuffers();  // Make visible
- */
-class FrameBuffer {
-public:
     /**
-     * @brief Construct framebuffer with front and back buffers
-     * @param width Width in pixels
-     * @param height Height in pixels
-     * @param frontBuffer Pointer to visible video memory
-     * @param backBuffer Pointer to off-screen drawing buffer
-     */
-    FrameBuffer(uint16_t width, uint16_t height, uint32_t* frontBuffer, uint32_t* backBuffer);
-
-    /**
-     * @brief Fill entire buffer with a color
-     * @param color Fill color
-     */
-    void fill(Color color);
-
-    /**
-     * @brief Draw a single pixel
-     * @param x X coordinate
-     * @param y Y coordinate
-     * @param color Pixel color
-     */
-    void drawPixel(uint32_t x, uint32_t y, Color color);
-
-    /**
-     * @brief Copy back buffer to front buffer
+     * @brief Double-buffered framebuffer for graphics rendering
      *
-     * Call this after rendering a complete frame to make it visible.
+     * Manages front and back buffers for tear-free rendering.
+     * Draw operations go to the back buffer, then swapBuffers()
+     * copies to the front (visible) buffer.
+     *
+     * @example
+     *   // Kernel provides the buffer pointers
+     *   FrameBuffer fb(800, 600, frontPtr, backPtr);
+     *   fb.fill(Color::Black);
+     *   fb.drawPixel(100, 100, Color::White);
+     *   fb.swapBuffers();  // Make visible
      */
-    void swapBuffers();
+    class FrameBuffer {
+    public:
+        /**
+         * @brief Construct framebuffer with front and back buffers
+         * @param width Width in pixels
+         * @param height Height in pixels
+         * @param frontBuffer Pointer to visible video memory
+         * @param backBuffer Pointer to off-screen drawing buffer
+         */
+        FrameBuffer(uint16_t width, uint16_t height, uint32_t* frontBuffer, uint32_t* backBuffer);
 
-    /**
-     * @brief Get pointer to back buffer
-     * @return Pointer to back buffer pixels
-     */
-    [[nodiscard]] uint32_t* getBackBuffer() { return backBuffer_; }
+        /**
+         * @brief Fill entire buffer with a color
+         * @param color Fill color
+         */
+        void fill(Color color);
 
-    /**
-     * @brief Get pointer to back buffer (const)
-     * @return Const pointer to back buffer pixels
-     */
-    [[nodiscard]] const uint32_t* getBackBuffer() const { return backBuffer_; }
+        /**
+         * @brief Draw a single pixel
+         * @param x X coordinate
+         * @param y Y coordinate
+         * @param color Pixel color
+         */
+        void drawPixel(uint32_t x, uint32_t y, Color color);
 
-    /**
-     * @brief Get framebuffer width
-     * @return Width in pixels
-     */
-    [[nodiscard]] uint16_t getWidth() const { return width_; }
+        /**
+         * @brief Copy back buffer to front buffer
+         *
+         * Call this after rendering a complete frame to make it visible.
+         */
+        void swapBuffers();
 
-    /**
-     * @brief Get framebuffer height
-     * @return Height in pixels
-     */
-    [[nodiscard]] uint16_t getHeight() const { return height_; }
+        /**
+         * @brief Get pointer to back buffer
+         * @return Pointer to back buffer pixels
+         */
+        [[nodiscard]] uint32_t* getBackBuffer() { return backBuffer_; }
 
-    /**
-     * @brief Get total buffer size in bytes
-     * @return Size in bytes
-     */
-    [[nodiscard]] uint32_t getSize() const { return width_ * height_ * sizeof(uint32_t); }
+        /**
+         * @brief Get pointer to back buffer (const)
+         * @return Const pointer to back buffer pixels
+         */
+        [[nodiscard]] const uint32_t* getBackBuffer() const { return backBuffer_; }
 
-    REMOVE_COPY(FrameBuffer);
+        /**
+         * @brief Get framebuffer width
+         * @return Width in pixels
+         */
+        [[nodiscard]] uint16_t getWidth() const { return width_; }
 
-private:
-    uint16_t width_;
-    uint16_t height_;
-    uint32_t* frontBuffer_;
-    uint32_t* backBuffer_;
-};
+        /**
+         * @brief Get framebuffer height
+         * @return Height in pixels
+         */
+        [[nodiscard]] uint16_t getHeight() const { return height_; }
 
-} // namespace myOS
+        /**
+         * @brief Get total buffer size in bytes
+         * @return Size in bytes
+         */
+        [[nodiscard]] uint32_t getSize() const { return width_ * height_ * sizeof(uint32_t); }
 
+        REMOVE_COPY(FrameBuffer);
+
+    private:
+        uint16_t width_;
+        uint16_t height_;
+        uint32_t* frontBuffer_;
+        uint32_t* backBuffer_;
+    };
+
+}  // namespace myOS

@@ -1,17 +1,18 @@
 /**
  * @file stdio.h
  * @brief Standard I/O functions for freestanding environment
- * 
+ *
  * Provides sprintf, snprintf, vsprintf, vsnprintf, sscanf implementations.
- * 
+ *
  * @author Mustafa Alotbah
  * @copyright myOS Project
  */
 
 #pragma once
 
-#include <stddef.h>
 #include <stdarg.h>
+#include <stddef.h>
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,7 +24,7 @@ extern "C" {
  * @param format Format string
  * @param ap Variable argument list
  * @return Number of characters written (excluding null terminator)
- * 
+ *
  * Supported format specifiers:
  *   %s  - String (char*)
  *   %c  - Character
@@ -39,7 +40,7 @@ extern "C" {
  *   %lld, %llu, %llx, %llX - Long long variants
  *   %zu - size_t
  *   %%  - Literal percent sign
- * 
+ *
  * Width specifier: %5d pads with zeros
  */
 size_t vsprintf(char* str, const char* format, va_list ap);
@@ -79,7 +80,7 @@ size_t snprintf(char* str, size_t size, const char* format, ...);
  * @param format Format string
  * @param args Variable argument list with pointers
  * @return Number of successfully parsed items
- * 
+ *
  * Supported format specifiers:
  *   %d  - Signed integer (int*)
  *   %u  - Unsigned integer (unsigned int*)
@@ -103,4 +104,3 @@ size_t sscanf(const char* str, const char* format, ...);
 #ifdef __cplusplus
 }
 #endif
-

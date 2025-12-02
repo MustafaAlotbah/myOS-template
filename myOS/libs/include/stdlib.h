@@ -1,15 +1,16 @@
 /**
  * @file stdlib.h
  * @brief Standard library functions for freestanding environment
- * 
+ *
  * @author Mustafa Alotbah
  * @copyright myOS Project
  */
 
 #pragma once
 
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -94,4 +95,3 @@ void ftoa(double value, char* str, int precision = 6);
 #ifdef __cplusplus
 }
 #endif
-

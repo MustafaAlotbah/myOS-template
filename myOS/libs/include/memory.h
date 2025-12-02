@@ -1,17 +1,18 @@
 /**
  * @file memory.h
  * @brief Memory manipulation functions for freestanding environment
- * 
+ *
  * Provides memcpy, memset, memcmp, memmove, and memchr implementations.
- * 
+ *
  * @author Mustafa Alotbah
  * @copyright myOS Project
  */
 
 #pragma once
 
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -74,4 +75,3 @@ void* memmove(void* dest, const void* src, size_t n);
 #ifdef __cplusplus
 }
 #endif
-

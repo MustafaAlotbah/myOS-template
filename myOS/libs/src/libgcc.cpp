@@ -1,12 +1,12 @@
 /**
  * @file libgcc.cpp
  * @brief GCC runtime support functions for 64-bit operations on 32-bit systems
- * 
+ *
  * These functions are normally provided by libgcc, but in a freestanding
  * environment we must implement them ourselves.
- * 
+ *
  * Required for 64-bit division and modulo operations on i686.
- * 
+ *
  * @author Mustafa Alotbah
  * @copyright myOS Project
  */
@@ -26,7 +26,7 @@ uint64_t __udivdi3(uint64_t dividend, uint64_t divisor) {
         return 0;  // Division by zero - return 0
     }
 
-    uint64_t quotient = 0;
+    uint64_t quotient  = 0;
     uint64_t remainder = 0;
 
     for (int i = 63; i >= 0; i--) {
@@ -34,7 +34,7 @@ uint64_t __udivdi3(uint64_t dividend, uint64_t divisor) {
         remainder |= (dividend >> i) & 1;
         if (remainder >= divisor) {
             remainder -= divisor;
-            quotient |= (uint64_t)1 << i;
+            quotient |= (uint64_t) 1 << i;
         }
     }
 
@@ -57,9 +57,7 @@ uint64_t __umoddi3(uint64_t dividend, uint64_t divisor) {
     for (int i = 63; i >= 0; i--) {
         remainder <<= 1;
         remainder |= (dividend >> i) & 1;
-        if (remainder >= divisor) {
-            remainder -= divisor;
-        }
+        if (remainder >= divisor) { remainder -= divisor; }
     }
 
     return remainder;
@@ -76,14 +74,14 @@ int64_t __divdi3(int64_t dividend, int64_t divisor) {
         return 0;  // Division by zero - return 0
     }
 
-    bool negative_result = (dividend < 0) ^ (divisor < 0);
+    bool negative_result  = (dividend < 0) ^ (divisor < 0);
 
     uint64_t abs_dividend = (dividend < 0) ? -dividend : dividend;
-    uint64_t abs_divisor = (divisor < 0) ? -divisor : divisor;
+    uint64_t abs_divisor  = (divisor < 0) ? -divisor : divisor;
 
     uint64_t abs_quotient = __udivdi3(abs_dividend, abs_divisor);
 
-    return negative_result ? -(int64_t)abs_quotient : (int64_t)abs_quotient;
+    return negative_result ? -(int64_t) abs_quotient : (int64_t) abs_quotient;
 }
 
 /**
@@ -97,12 +95,12 @@ int64_t __moddi3(int64_t dividend, int64_t divisor) {
         return 0;  // Modulus by zero - return 0
     }
 
-    uint64_t abs_dividend = (dividend < 0) ? -dividend : dividend;
-    uint64_t abs_divisor = (divisor < 0) ? -divisor : divisor;
+    uint64_t abs_dividend  = (dividend < 0) ? -dividend : dividend;
+    uint64_t abs_divisor   = (divisor < 0) ? -divisor : divisor;
 
     uint64_t abs_remainder = __umoddi3(abs_dividend, abs_divisor);
 
-    return (dividend < 0) ? -(int64_t)abs_remainder : (int64_t)abs_remainder;
+    return (dividend < 0) ? -(int64_t) abs_remainder : (int64_t) abs_remainder;
 }
 
 /**
@@ -119,9 +117,7 @@ int64_t __divmoddi4(int64_t dividend, int64_t divisor, int64_t* remainder) {
     }
 
     int64_t quotient = __divdi3(dividend, divisor);
-    if (remainder) {
-        *remainder = dividend - (quotient * divisor);
-    }
+    if (remainder) { *remainder = dividend - (quotient * divisor); }
 
     return quotient;
 }
@@ -140,9 +136,7 @@ uint64_t __udivmoddi4(uint64_t dividend, uint64_t divisor, uint64_t* remainder) 
     }
 
     uint64_t quotient = __udivdi3(dividend, divisor);
-    if (remainder) {
-        *remainder = dividend - (quotient * divisor);
-    }
+    if (remainder) { *remainder = dividend - (quotient * divisor); }
 
     return quotient;
 }
@@ -158,21 +152,21 @@ uint64_t __udivmoddi4(uint64_t dividend, uint64_t divisor, uint64_t* remainder) 
 
 /**
  * @brief Acquire guard for static initialization
- * 
+ *
  * Called before initializing a static local variable.
  * Returns 1 if initialization should proceed, 0 if already initialized.
- * 
+ *
  * @param guard Pointer to the 64-bit guard object
  * @return 1 if caller should initialize, 0 if already done
  */
 int __cxa_guard_acquire(uint64_t* guard) {
     // Check if already initialized (byte 0)
     char* guard_byte = reinterpret_cast<char*>(guard);
-    
+
     if (guard_byte[0] != 0) {
         return 0;  // Already initialized
     }
-    
+
     // Check if another thread is initializing (byte 1)
     // For single-core: simple spinlock
     // For multi-core: would need atomic compare-exchange
@@ -181,12 +175,12 @@ int __cxa_guard_acquire(uint64_t* guard) {
         // In multi-threaded: should use proper synchronization
         asm volatile("pause" ::: "memory");
     }
-    
+
     // Double-check after acquiring
     if (guard_byte[0] != 0) {
         return 0;  // Someone else finished while we waited
     }
-    
+
     // Mark as "being initialized"
     guard_byte[1] = 1;
     return 1;  // Caller should initialize
@@ -194,39 +188,38 @@ int __cxa_guard_acquire(uint64_t* guard) {
 
 /**
  * @brief Release guard after successful initialization
- * 
+ *
  * Called after successfully initializing a static local variable.
- * 
+ *
  * @param guard Pointer to the 64-bit guard object
  */
 void __cxa_guard_release(uint64_t* guard) {
     char* guard_byte = reinterpret_cast<char*>(guard);
-    
+
     // Mark as initialized
-    guard_byte[0] = 1;
+    guard_byte[0]    = 1;
     // Clear "being initialized" flag
-    guard_byte[1] = 0;
-    
+    guard_byte[1]    = 0;
+
     // Memory barrier to ensure visibility
     asm volatile("" ::: "memory");
 }
 
 /**
  * @brief Abort guard after failed initialization (exception thrown)
- * 
+ *
  * Called if initialization throws an exception.
- * 
+ *
  * @param guard Pointer to the 64-bit guard object
  */
 void __cxa_guard_abort(uint64_t* guard) {
     char* guard_byte = reinterpret_cast<char*>(guard);
-    
+
     // Clear "being initialized" flag, leave uninitialized
-    guard_byte[1] = 0;
-    
+    guard_byte[1]    = 0;
+
     // Memory barrier
     asm volatile("" ::: "memory");
 }
 
-} // extern "C"
-
+}  // extern "C"
